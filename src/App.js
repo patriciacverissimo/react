@@ -1,25 +1,69 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
 
-function App() {
+const App = () => {
+  //estado para armazenar a lista de tarefas
+  const [tarefas, setTarefas] = useState([]);
+
+  //estado para controlar o filtro
+  const [filtro, setFiltro] = useState("todos");
+
+  //estado para armazenar o valor atual do campo nova tarefa
+  const [novaTarefa, setNovaTarefa] = useState("");
+
+  //criar uma função para adicionar uma nova tarefa na lista
+  const adicionarTarefa = () => {
+    if (novaTarefa) {
+      setTarefas([...tarefas, { nome: novaTarefa, concluida: false }]);
+      setNovaTarefa(""); //limpar o campo de entrada de texto
+    }
+  };
+
+  //alternar o status concluída de uma tarefa
+  const toggleConcluida = (index) => {
+    const novasTarefas = [...tarefas]; //clonou a lista
+    novasTarefas[index].concluida = !novasTarefas[index].concluida; //inverteu o valor do que mexeu
+    setTarefas(novasTarefas); //atualizar a lista
+  };
+
+  //filtrar as tarefas com base no filtro selecionado
+  const tarefasFiltradas = tarefas.filter((tarefa) => {
+    if (filtro === "concluidas") return tarefa.concluida;
+    if (filtro === "pendentes") return !tarefa.concluida;
+    return true;
+  });
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <div>Gerenciador de Tarefas</div>
+      <div>
+        {/*campo de entrada para uma nova tarefa e botão de adição */}
+        <input
+          value={novaTarefa}
+          onChange={(e) => setNovaTarefa(e.target.value)}
+        />
+        <button onClick={adicionarTarefa}>Adicionar Tarefa</button>
+        {/*botões para filtro*/}
+        <div>
+          <button onClick={() => setFiltro("todas")}>Todas</button>
+          <button onClick={() => setFiltro("concluidas")}>Concluídas</button>
+          <button onClick={() => setFiltro("pendentes")}>Pendentes</button>
+        </div>
+        {/*Lista de Tarefas*/}
+        <ul>
+          {tarefasFiltradas.map((tarefa, index) => (
+            <li key={index}>
+              <input
+                type="checkbox"
+                checked={tarefa.concluida}
+                onChange={() => toggleConcluida(index)}
+              />
+              {tarefa.nome}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </>
   );
-}
+};
 
 export default App;
